@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import Card from "./Card"
 
@@ -14,24 +14,23 @@ function App() {
   let [cards, setCards]= useState([]);
   
   console.log("up");
+
+  const fetchNews = useCallback( async () => {
+    try {
+      const response = await fetch(
+        `https://serpapi.com/search.json?engine=google_news&q=country&gl=in&hl=en&api_key=${api_key}`
+      );
+      const data = await response.json();
+      console.log(data.news_results);
+      setCards(data.news_results);
+    } catch (error) {
+      console.error("Error fetching news data:", error);
+    }
+  },[])
   
   useEffect( ()=> {
-      
-    const fetchNews = async () => {
-      try {
-        const response = await fetch(
-          `https://serpapi.com/search.json?engine=google_news&q=country&gl=in&hl=en&api_key=${api_key}`
-        );
-        const data = await response.json();
-        console.log(data.news_results);
-        setCards(data.news_results);
-      } catch (error) {
-        console.error("Error fetching news data:", error);
-      }
-    };
-
     fetchNews();
-},[])
+},[fetchNews])
   return (
     <>
       <div className="w-screen min-h-screen bg-zinc-800">
